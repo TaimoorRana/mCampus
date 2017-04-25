@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import android.widget.ToggleButton;
@@ -94,7 +95,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
     private boolean directionMode = false;
 
     private Button viewSwitchButton;
-    private FloatingActionButton directionsButton;
+    private ImageButton setBuildingDirectionButton;
     private FloatingActionButton mapCenterButton;
 
     private POI bottomSheetBuilding;
@@ -152,16 +153,8 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
 
         campusButton = (Button) parentLayout.findViewById(R.id.campusButton);
         viewSwitchButton = (Button) parentLayout.findViewById(R.id.viewSwitchButton);
-        directionsButton = (FloatingActionButton) parentLayout.findViewById(R.id.directionsButton);
-        directionsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setFlag(FLAG_NO_DISPLAY);
-                if (bottomSheetBuilding != null) {
-                    ((MainActivity) getActivity()).setNavigationPOI(bottomSheetBuilding, false);
-                }
-            }
-        });
+        setBuildingDirectionButton = (ImageButton) parentLayout.findViewById(
+                R.id.setDirectionsButton);
 
         campusButton.setVisibility(View.VISIBLE);
         viewSwitchButton.setText("GO INDOORS");
@@ -174,6 +167,15 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
                     setFlag(FLAG_NO_DISPLAY);
                 } else {
                     showOutdoorMap();
+                }
+            }
+        });
+
+        setBuildingDirectionButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bottomSheetBuilding != null) {
+                    ((MainActivity) getActivity()).setNavigationPOI(bottomSheetBuilding, false);
                 }
             }
         });
@@ -234,6 +236,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
                 while(true) {
                     try {
                         sleep(20);
+
                         int y = 0;
 
                         if ((building_flag == FLAG_INFO)) {
@@ -348,20 +351,17 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
             Log.d("bottomsheet-", "DIRECTIONS");
             showBuildingInfoFragment(false);
             showDirectionsFragment(true);
-            directionsButton.setVisibility(View.VISIBLE);
         }
         else if(building_flag == FLAG_INFO){
             Log.d("bottomsheet-", "INFO");
             showBuildingInfoFragment(true);
             showDirectionsFragment(false);
             buildingInfoFragment.collapse();
-            directionsButton.setVisibility(View.VISIBLE);
         }
         else if(building_flag == FLAG_NO_DISPLAY){
             Log.d("bottomsheet-", "NO_DISPLAY");
             showDirectionsFragment(false);
             showBuildingInfoFragment(false);
-            directionsButton.setVisibility(View.GONE);
         }
 
     }
@@ -408,7 +408,6 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
         if (building.getRooms().size() > 0) {
             viewType = ViewType.INDOOR;
             showTransportButton(false);
-            directionsButton.setVisibility(View.GONE);
             campusButton.setVisibility(View.GONE);
 
             getChildFragmentManager().beginTransaction().show(indoorMapFragment).hide(mapFragment).commit();
@@ -428,7 +427,6 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback,
 
         showTransportButton(true);
         campusButton.setVisibility(View.VISIBLE);
-        directionsButton.setVisibility(View.GONE);
 
         getChildFragmentManager().beginTransaction().show(mapFragment).hide(indoorMapFragment).commit();
 
